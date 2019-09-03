@@ -38,9 +38,11 @@ jobs:
       - run: yarn build
 
       # run tests!
-      - run: yarn test# save dist folder!
+      - run: yarn test
+
+      # save dist folder!
       - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
           root: ~/repo/ci-start
           # Must be relative path from root
@@ -50,14 +52,14 @@ jobs:
   deploy:
     docker:
       - image: buildpack-deps:trusty
-    
+
     working_directory: ~/repo/ci-start/build
 
     steps:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: ~/repo/ci-start
-      
+
       - run:
           name: git init
           command: |
@@ -67,17 +69,17 @@ jobs:
             git config --global user.email "pakawat.ane@gmail.com"
             git config --global user.name "Hong CircleCI Deploy"
             git add -A
-      
+
       - run:
           name: git commit
           command: |
             git add -A
             git commit -m "Deploy"
-      
+
       - run:
           name: Deploy Master to Heroku
           command: |
-            git push https://heroku:aec1ca7d-1396-4e6e-a208-5d5541d92131@git.heroku.com/pk-sanook-meetup-006.git master -f
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master -f
 
 workflows:
   version: 2
